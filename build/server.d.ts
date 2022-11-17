@@ -2,7 +2,7 @@ import { IOptions } from './options';
 export declare class DevServer {
     private _port;
     private _root;
-    private _live;
+    private _hot;
     private _identifier;
     private _clients;
     private _proxy;

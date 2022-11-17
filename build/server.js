@@ -14,8 +14,8 @@ class DevServer {
     constructor(options) {
         this._port = 3000;
         this._root = ".";
-        this._live = true;
-        this._identifier = "/foo";
+        this._hot = true;
+        this._identifier = "/dev-proxy-server";
         this.update = () => {
             this._clients.forEach(response => response.write('data: update\n\n'));
             this._clients.length = 0;
@@ -29,7 +29,7 @@ class DevServer {
             if (this._proxy.tryProxy(req, res)) {
                 return;
             }
-            if (this._live && req.url === this._identifier) {
+            if (this._hot && req.url === this._identifier) {
                 this._addClient(res);
                 return;
             }
@@ -38,11 +38,12 @@ class DevServer {
                 result = await readFile_1.readFile(this._root, req.url);
             }
             catch (error) {
-                error(error);
+                utils_1.err(error);
+                return;
             }
             const { isHtml, encoding, contentType } = result;
             let content = result.content;
-            if (this._live && isHtml) {
+            if (this._hot && isHtml) {
                 // Injecting an event source into the html
                 // - Creates a request to "source" which will be handled by our listener
                 // - our listener will keep this request connection alive with the client
@@ -59,7 +60,7 @@ class DevServer {
             if (info.port != this._port) {
                 utils_1.err(`Port ${this._port} was in use.\n`);
             }
-            utils_1.wrn(`[ Dev Server Running (http://localhost:${info.port}) ]`);
+            utils_1.wrn(`[ Dev Proxy Server (http://localhost:${info.port}) ]`);
         };
         this._addClient = (response) => {
             response.writeHead(200, {
@@ -71,7 +72,7 @@ class DevServer {
         };
         this._port = (options === null || options === void 0 ? void 0 : options.port) || this._port;
         this._root = (options === null || options === void 0 ? void 0 : options.root) || this._root;
-        this._live = (options === null || options === void 0 ? void 0 : options.live) || this._live;
+        this._hot = (options === null || options === void 0 ? void 0 : options.hot) || this._hot;
         this._clients = [];
         this._proxy = new proxy_1.Proxy((options === null || options === void 0 ? void 0 : options.proxies) || []);
         this._start();

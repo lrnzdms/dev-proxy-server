@@ -9,6 +9,6 @@ export interface IProxyRoute {
 export interface IOptions {
     port?: number;
     root?: string;
-    live?: boolean;
+    hot?: boolean;
     proxies?: IProxyRoute[];
 }
