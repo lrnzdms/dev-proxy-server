@@ -53,7 +53,8 @@ export class DevServer {
     try {
       result = await readFile(this._root, req.url);
     } catch (error) {
-      error(error);
+      err(error);
+      return;
     }
 
     const { isHtml, encoding, contentType } = result;
