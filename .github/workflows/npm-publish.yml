@@ -26,5 +26,5 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          registry-url: https://registry.npmjs.org/:_authToken=${{secrets.NPM_ACCESS_TOKEN}}
+      - run: npm set "//registry.npmjs.org/:_authToken" ${{ secrets.NPM_ACCESS_TOKEN }}
       - run: npm publish --access public
