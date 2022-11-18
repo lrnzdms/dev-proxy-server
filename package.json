@@ -1,12 +1,10 @@
 {
-  "name": "dev-proxy-server",
+  "name": "@lrnzdms/local-server",
   "version": "0.0.1",
   "author": "lrnzdms",
-  "repository": {
-    "type": "git",
-    "url": ""
-  },
+  "repository": "git://github.com/lrnzdms/local-server.git",
   "main": "build/index.js",
+  "files": ["build/"],
   "scripts": {
     "prebuild": "rm -rf ./dist",
     "build": "tsc"
