@@ -1,9 +1,9 @@
 ﻿# Local Server
 
-A light local http server without any dependencies and proxy capabilities.
+A light local http server with proxy capabilities and no dependencies.
 
 ``` js
-import { DevServer } from '@lrnsdms/local-server';
+import { DevServer } from '@lrnzdms/local-server';
   
 const options = {
   
