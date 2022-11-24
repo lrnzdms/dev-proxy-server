@@ -32,9 +32,15 @@ export class DevServer {
   }
 
   private _start = () => {
+    
     const server = http.createServer(this._handleRequest);
     server.listen(this._port, () => this._initializationLog(server));
-    server.once('error', () => server.removeAllListeners('listening'));
+
+    server.once('error', () => {
+      console.error("Encountered error. Trying to restart ...");
+      server.removeAllListeners('listening');
+      this._start();
+    });
   }
 
   private _handleRequest: RequestListener = async (req, res) => {

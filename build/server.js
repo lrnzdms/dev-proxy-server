@@ -23,7 +23,11 @@ class DevServer {
         this._start = () => {
             const server = http_1.default.createServer(this._handleRequest);
             server.listen(this._port, () => this._initializationLog(server));
-            server.once('error', () => server.removeAllListeners('listening'));
+            server.once('error', () => {
+                console.error("Encountered error. Trying to restart ...");
+                server.removeAllListeners('listening');
+                this._start();
+            });
         };
         this._handleRequest = async (req, res) => {
             if (this._proxy.tryProxy(req, res)) {
