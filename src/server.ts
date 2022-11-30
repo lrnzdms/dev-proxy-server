@@ -8,10 +8,10 @@ import { IReadFileResult, readFile } from './readFile';
 import { err, wrn } from './utils';
 
 export class DevServer {
+  private _identifier = `/proxy_${Date.now()}`;
   private _port: number = 3000;
   private _root: string = ".";
   private _hot: boolean = true;
-  private _identifier = "/dev-proxy-server";
   private _clients: ServerResponse[];
   private _proxy: Proxy;
 
