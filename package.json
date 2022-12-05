@@ -1,6 +1,6 @@
 {
   "name": "@lrnzdms/local-server",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "lrnzdms",
   "repository": "git://github.com/lrnzdms/local-server.git",
   "main": "build/index.js",

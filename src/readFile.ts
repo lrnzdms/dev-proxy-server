@@ -8,7 +8,7 @@ const read = (path: string, encoding?: string) => new Promise<string>((res, rej)
 
     if (error) {
       const msg = error.code === "ENOENT" ? 404 : 500;
-      rej(msg);
+      rej(`${msg} ${path}`);
       return;
     }
 
@@ -26,7 +26,7 @@ export interface IReadFileResult {
 
 export const readFile = async (root: string, url: string): Promise<IReadFileResult> => {
 
-  const filePath = `${root}/${url === "/" ? "index.html" : url}`;
+  const filePath = `${root}${url === "/" ? "/index.html" : url}`;
   const ext = path.extname(filePath).toLowerCase().slice(1);
   const contentType = getMimeType(ext);
   const isHtml = contentType == 'text/html';
