@@ -11,14 +11,14 @@ const read = (path, encoding) => new Promise((res, rej) => {
     fs_1.default.readFile(path, encoding, (error, content) => {
         if (error) {
             const msg = error.code === "ENOENT" ? 404 : 500;
-            rej(msg);
+            rej(`${msg} ${path}`);
             return;
         }
         res(content);
     });
 });
 const readFile = async (root, url) => {
-    const filePath = `${root}/${url === "/" ? "index.html" : url}`;
+    const filePath = `${root}${url === "/" ? "/index.html" : url}`;
     const ext = path_1.default.extname(filePath).toLowerCase().slice(1);
     const contentType = mimeTypes_1.getMimeType(ext);
     const isHtml = contentType == 'text/html';
