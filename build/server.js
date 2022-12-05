@@ -12,10 +12,10 @@ const readFile_1 = require("./readFile");
 const utils_1 = require("./utils");
 class DevServer {
     constructor(options) {
+        this._identifier = `/proxy_${Date.now()}`;
         this._port = 3000;
         this._root = ".";
         this._hot = true;
-        this._identifier = "/dev-proxy-server";
         this.update = () => {
             this._clients.forEach(response => response.write('data: update\n\n'));
             this._clients.length = 0;
@@ -39,7 +39,8 @@ class DevServer {
             }
             let result;
             try {
-                result = await readFile_1.readFile(this._root, req.url);
+                const url = new URL(req.url, `http://${req.headers.host}`);
+                result = await readFile_1.readFile(this._root, url.pathname);
             }
             catch (error) {
                 utils_1.err(error);

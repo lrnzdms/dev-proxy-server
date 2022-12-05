@@ -57,7 +57,8 @@ export class DevServer {
     let result: IReadFileResult;
 
     try {
-      result = await readFile(this._root, req.url);
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      result = await readFile(this._root, url.pathname);
     } catch (error) {
       err(error);
       return;
