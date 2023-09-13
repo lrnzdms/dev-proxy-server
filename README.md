@@ -16,6 +16,12 @@ const options = {
   // Hot reload. Optional. Default true
   hot: true,
 
+  // Listen to WebSocket messages to trigger updates. Optional. Default false
+  listenToWS: false,
+
+  // Port of another server to notify via WebSocket on updates. Optional
+  notifyPort: 8081,
+
   // Routes to proxy. Order matters: 
   // The first matched route will be followed
   proxies: [
