@@ -35,9 +35,13 @@ export class DevServer {
     if(this._notifyPort) {
       const ws = new WebSocket(`ws://localhost:${this._notifyPort.toString()}`);
       ws.on('open', () => {
-          console.log('WebSocket connection established.');
-          ws.send('serverReloaded', (err) => console.log(err));
-          console.log('message sent');
+          ws.send('serverReloaded', (err) => {
+            if(err) {
+              console.log(err);
+            } else {
+              console.log(`Server on port ${this._notifyPort.toString()} has been notified`);
+            }
+          });
       });
       ws.on('error', (error) => {
           console.error('WebSocket Error:', error);
