@@ -14,6 +14,7 @@ export class DevServer {
   private _hot: boolean = true;
   private _clients: ServerResponse[];
   private _proxy: Proxy;
+  private _server: http.Server;
 
   constructor(options?: IOptions) {
     this._port = options?.port || this._port;
@@ -26,6 +27,9 @@ export class DevServer {
     this._start();
   }
 
+  get server() {
+    return this._server;
+  }
   update = () => {
     this._clients.forEach(response => response.write('data: update\n\n'));
     this._clients.length = 0;
@@ -33,12 +37,12 @@ export class DevServer {
 
   private _start = () => {
     
-    const server = http.createServer(this._handleRequest);
-    server.listen(this._port, () => this._initializationLog(server));
+    this._server = http.createServer(this._handleRequest);
+    this._server.listen(this._port, () => this._initializationLog(this._server));
 
-    server.once('error', () => {
+    this._server.once('error', () => {
       console.error("Encountered error. Trying to restart ...");
-      server.removeAllListeners('listening');
+      this._server.removeAllListeners('listening');
       this._start();
     });
   }

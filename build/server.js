@@ -21,11 +21,11 @@ class DevServer {
             this._clients.length = 0;
         };
         this._start = () => {
-            const server = http_1.default.createServer(this._handleRequest);
-            server.listen(this._port, () => this._initializationLog(server));
-            server.once('error', () => {
+            this._server = http_1.default.createServer(this._handleRequest);
+            this._server.listen(this._port, () => this._initializationLog(this._server));
+            this._server.once('error', () => {
                 console.error("Encountered error. Trying to restart ...");
-                server.removeAllListeners('listening');
+                this._server.removeAllListeners('listening');
                 this._start();
             });
         };
@@ -81,6 +81,9 @@ class DevServer {
         this._clients = [];
         this._proxy = new proxy_1.Proxy((options === null || options === void 0 ? void 0 : options.proxies) || []);
         this._start();
+    }
+    get server() {
+        return this._server;
     }
 }
 exports.DevServer = DevServer;
