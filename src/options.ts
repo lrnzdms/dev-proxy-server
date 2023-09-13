@@ -17,5 +17,7 @@ export interface IOptions {
   // Hot reload. Default true
   hot?: boolean,
   // Routes to proxy. Order matters: The first matched route will be followed
-  proxies?: IProxyRoute[]
+  proxies?: IProxyRoute[],
+  notifyPort?: number,
+  listenToWS?: boolean
 }

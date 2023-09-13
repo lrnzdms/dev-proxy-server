@@ -11,4 +11,6 @@ export interface IOptions {
     root?: string;
     hot?: boolean;
     proxies?: IProxyRoute[];
+    notifyPort?: number;
+    listenToWS?: boolean;
 }

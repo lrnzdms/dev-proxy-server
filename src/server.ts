@@ -1,4 +1,4 @@
-import http, { RequestListener, ServerResponse } from 'http';
+import http, { RequestListener, ServerResponse, request } from 'http';
 import { AddressInfo } from 'net';
 import { networkInterfaces } from 'os';
 import { injectListener } from './injectListener';
@@ -6,6 +6,7 @@ import { IOptions } from './options';
 import { Proxy } from './proxy';
 import { IReadFileResult, readFile } from './readFile';
 import { err, wrn } from './utils';
+import { WebSocketServer, WebSocket } from 'ws';
 
 export class DevServer {
   private _identifier = `/proxy_${Date.now()}`;
@@ -14,35 +15,60 @@ export class DevServer {
   private _hot: boolean = true;
   private _clients: ServerResponse[];
   private _proxy: Proxy;
-  private _server: http.Server;
+  private _notifyPort: number = undefined;
+  private _listenToWS: boolean = false;
 
   constructor(options?: IOptions) {
     this._port = options?.port || this._port;
     this._root = options?.root || this._root;
     this._hot = options?.hot || this._hot;
-
+    this._listenToWS = options.listenToWS || this._listenToWS;
+    this._notifyPort = options.notifyPort || this._notifyPort;
     this._clients = [];
     this._proxy = new Proxy(options?.proxies || []);
 
     this._start();
   }
 
-  get server() {
-    return this._server;
-  }
+  
   update = () => {
+    if(this._notifyPort) {
+      const ws = new WebSocket(`ws://localhost:${this._notifyPort.toString()}`);
+      ws.on('open', () => {
+          console.log('WebSocket connection established.');
+          ws.send('serverReloaded', (err) => console.log(err));
+          console.log('message sent');
+      });
+      ws.on('error', (error) => {
+          console.error('WebSocket Error:', error);
+      });
+      
+    }
     this._clients.forEach(response => response.write('data: update\n\n'));
     this._clients.length = 0;
+
   }
 
   private _start = () => {
     
-    this._server = http.createServer(this._handleRequest);
-    this._server.listen(this._port, () => this._initializationLog(this._server));
+    const server = http.createServer(this._handleRequest);
+    server.listen(this._port, () => this._initializationLog(server))
 
-    this._server.once('error', () => {
+    if(this._listenToWS) {
+      const wss = new WebSocketServer({ noServer: true });
+      server.on('upgrade', (request, socket, head) => {
+        wss.handleUpgrade(request, socket, head, (ws) => {
+            wss.emit('connection', ws, request);
+             ws.on('message', (message) => {
+              this.update();
+            });
+        });
+      })
+    }
+
+    server.once('error', () => {
       console.error("Encountered error. Trying to restart ...");
-      this._server.removeAllListeners('listening');
+      server.removeAllListeners('listening');
       this._start();
     });
   }
