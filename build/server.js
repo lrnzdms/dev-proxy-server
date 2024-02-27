@@ -74,6 +74,8 @@ class DevServer {
             }
             catch (error) {
                 utils_1.err(error);
+                res.writeHead(404);
+                res.end("", "");
                 return;
             }
             const { isHtml, encoding, contentType } = result;

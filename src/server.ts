@@ -95,6 +95,8 @@ export class DevServer {
       result = await readFile(this._root, url.pathname);
     } catch (error) {
       err(error);
+      res.writeHead(404);
+      res.end("", "");
       return;
     }
 
