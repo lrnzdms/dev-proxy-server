@@ -94,10 +94,16 @@ export class DevServer {
       const url = new URL(req.url, `http://${req.headers.host}`);
       result = await readFile(this._root, url.pathname);
     } catch (error) {
-      err(error);
-      res.writeHead(404);
-      res.end("", "");
-      return;
+
+      if (typeof error === "string" && error.startsWith("404")) {
+        wrn(error, "routing to index.html");
+        result = await readFile(this._root, "/index.html");
+      } else {
+        err(error);
+        res.writeHead(404);
+        res.end("", "");
+        return; // do not continue processing request
+      }
     }
 
     const { isHtml, encoding, contentType } = result;

@@ -73,10 +73,16 @@ class DevServer {
                 result = await readFile_1.readFile(this._root, url.pathname);
             }
             catch (error) {
-                utils_1.err(error);
-                res.writeHead(404);
-                res.end("", "");
-                return;
+                if (typeof error === "string" && error.startsWith("404")) {
+                    utils_1.wrn(error, "routing to index.html");
+                    result = await readFile_1.readFile(this._root, "/index.html");
+                }
+                else {
+                    utils_1.err(error);
+                    res.writeHead(404);
+                    res.end("", "");
+                    return; // do not continue processing request
+                }
             }
             const { isHtml, encoding, contentType } = result;
             let content = result.content;
