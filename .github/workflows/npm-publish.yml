@@ -36,10 +36,9 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         
-    # - name: Configure npm
-    #   run: |
-    #     echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-    #     echo "@btrlty:registry=https://npm.pkg.github.com" >> .npmrc
+    - name: Configure npm
+      run: |
+        echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
         
     - name: Bump version
       id: bump_version
