@@ -1,7 +1,7 @@
 name: Bump Version, Build, and Publish to NPM
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       BUILD_CMD:
         required: true
