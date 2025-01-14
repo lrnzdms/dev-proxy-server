@@ -38,8 +38,7 @@ jobs:
         
     - name: Configure npm
       run: |
-        echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc        
-        echo "npm whoami"
+        npm set "//registry.npmjs.org/:_authToken" ${{ secrets.NPM_TOKEN }}
         
     - name: Bump version
       id: bump_version
