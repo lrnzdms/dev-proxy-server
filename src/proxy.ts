@@ -15,7 +15,7 @@ export class Proxy {
   tryProxy = (req: IncomingMessage, res: ServerResponse): boolean => {
     if (this._table.length === 0) return false;
 
-    const entry = this._table.find(t => req.url.includes(t.route));
+    const entry = this._table.find(t => req.url.startsWith(t.route));
 
     if (!entry) return false;
 
