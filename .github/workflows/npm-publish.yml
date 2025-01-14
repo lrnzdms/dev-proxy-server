@@ -38,7 +38,8 @@ jobs:
         
     - name: Configure npm
       run: |
-        echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+        echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc        
+        echo "npm whoami"
         
     - name: Bump version
       id: bump_version
@@ -53,7 +54,7 @@ jobs:
       run: npm run ${{ github.event.inputs.BUILD_CMD }}
 
     - name: Publish to NPM
-      run: npm publish
+      run: npm publish --access public
       
     - name: Delete existing tag if it exists
       run: |
