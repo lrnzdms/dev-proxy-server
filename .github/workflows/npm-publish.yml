@@ -1,13 +1,21 @@
-name: Bump Version, Build, and Publish to NPM
+name: Publish
 
 on:
   workflow_dispatch:
     inputs:
+      VERSION_BUMP:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
       BUILD_CMD:
+        description: 'Build command'
         required: true
-        type: string
-      VERSION_BUMP: # 'major', 'minor', 'patch' => v{major}.{minor}.{patch}
-        required: true
+        default: 'build'
         type: string
 
 jobs:
