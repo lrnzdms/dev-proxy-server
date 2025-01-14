@@ -1,30 +1,61 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
-
-name: Node.js Package
+name: Bump Version, Build, and Publish to NPM
 
 on:
-  release:
-    types: [created]
+  workflow_call:
+    inputs:
+      BUILD_CMD:
+        required: true
+        type: string
+      VERSION_BUMP: # 'major', 'minor', 'patch' => v{major}.{minor}.{patch}
+        required: true
+        type: string
 
 jobs:
-  build:
+  bump_build_publish:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm install
-      - run: npm run build
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-  publish-npm:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm set "//registry.npmjs.org/:_authToken" ${{ secrets.NPM_TOKEN }}
-      - run: npm publish --access public
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Configure git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        
+    # - name: Configure npm
+    #   run: |
+    #     echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+    #     echo "@btrlty:registry=https://npm.pkg.github.com" >> .npmrc
+        
+    - name: Bump version
+      id: bump_version
+      run: |
+        npm version ${{ inputs.VERSION_BUMP }} -m "Bump version to %s"
+        echo "::set-output name=new_version::$(node -p -e "require('./package.json').version")"
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run ${{ github.event.inputs.BUILD_CMD }}
+
+    - name: Publish to NPM
+      run: npm publish
+      
+    - name: Delete existing tag if it exists
+      run: |
+        git tag -d v${{ steps.bump_version.outputs.new_version }} || true
+        git push origin :refs/tags/v${{ steps.bump_version.outputs.new_version }} || true
+
+    - name: Commit bumped version and build
+      run: |
+        git add .
+        git diff-index --quiet HEAD || git commit -m "Release version ${{ steps.bump_version.outputs.new_version }}"
+        git tag v${{ steps.bump_version.outputs.new_version }}
+        git push origin HEAD --tags
